@@ -5,10 +5,7 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.utils import formataddr
 from email import encoders
-
-sender_email = input("Enter Sender_Email:")  # Replace with your actual email
-sender_password = input("Enter Sender_Password:")  # Replace with your actual password
-receiver_email = input("Enter Receiver_Email:")  # Replace with the email you want to send the email to
+import openpyxl
 
 html_content = """
 <!DOCTYPE html>
@@ -72,7 +69,7 @@ html_content = """
 
 """
 
-for i in range(1,3):
+def send_email(sender_email, sender_password, receiver_email, i):
     message = MIMEMultipart("related")  # "related" is necessary for embedding images
     message["From"] = formataddr(("WORKSHOP", sender_email))
     message["To"] = receiver_email
@@ -91,5 +88,18 @@ for i in range(1,3):
     except Exception as e:
         print("Error sending email:", e)
 
+def read_all_emails(file_path):
+    wb = openpyxl.load_workbook(file_path)
+    sheet = wb.active
+    data = []
+    for row in sheet.iter_rows(values_only=True):
+        data.append(row)
+    return data
 
-input("presss  enterrrrr")
+info = read_all_emails("data.xlsx")
+for i in range(len(info)):
+    if info[i][1] == info[i][7]:
+        send_email("emptyyyyy", "emptyyyyy", info[i][1], i)
+    else:
+        send_email("emptyyyyy", "emptyyyyy", info[i][1], i)
+        send_email("emptyyyyy", "emptyyyyy", info[i][7], i)

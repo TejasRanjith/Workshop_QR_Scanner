@@ -34,10 +34,10 @@ def read_data_from_excel(file_path):
     return data
 
 info = read_data_from_excel("data.xlsx")
-for i in range(len(info)):
-    list_of_data.append(info[i][0])
+for i in range(1,len(info)):
+    list_of_data.append(info[i][-1])
 
 filename = "qr_code.png"
 for i in range(0,len(list_of_data)):
-    generate_qr_code(list_of_data[i], 'qr_code' + str(i+1) + '.png')
+    generate_qr_code(list_of_data[i], 'images/qr_code' + str(i+1) + '.png')
     
