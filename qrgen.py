@@ -37,7 +37,9 @@ info = read_data_from_excel("data.xlsx")
 for i in range(1,len(info)):
     list_of_data.append(info[i][-1])
 
-filename = "qr_code.png"
+# filename = "qr_code.png"
+# data="https://ideaignite.aidajecc.in"
 for i in range(0,len(list_of_data)):
     generate_qr_code(list_of_data[i], 'images/qr_code' + str(i+1) + '.png')
+# generate_qr_code(data, filename)
     

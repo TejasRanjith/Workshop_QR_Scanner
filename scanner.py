@@ -1,13 +1,13 @@
 import tkinter as tk
 import cv2
-import keyboard
-import time
 import openpyxl
 import openpyxl.workbook
 from PIL import Image, ImageTk
 
 list_of_data = []
 list_of_qr = []
+list_of_name = []
+list_of_read = []
 last_row = 0
 
 def resize_image(image_path, new_width, new_height):
@@ -41,7 +41,7 @@ def show_invalid():
     label = tk.Label(window, image=photo)
     label.pack()
 
-    label = tk.Label(window, text="Your QR code is valid!")
+    label = tk.Label(window, text="This QR code is already Registered.")
     label.pack()
 
     window.after(3000, window.destroy)
@@ -51,15 +51,32 @@ def create_excel_file():
     create_excel = openpyxl.Workbook()
     create_excel.save('datatest.xlsx')
 
-def add_data_to_excel(code,stat):
+def add_data_to_excel(name,code,stat):
     workbook = openpyxl.load_workbook('datatest.xlsx')
 
     sheet = workbook['Sheet']
 
     last_row = sheet.max_row + 1
 
-    sheet.cell(row=last_row, column=1).value = code
-    sheet.cell(row=last_row, column=2).value = stat
+    sheet.cell(row=last_row, column=1).value = name
+    sheet.cell(row=last_row, column=2).value = code
+    sheet.cell(row=last_row, column=3).value = stat
+
+    workbook.save('datatest.xlsx')
+
+def name_from_excel(data):
+    workbook = openpyxl.load_workbook('datatest.xlsx')
+
+    sheet = workbook['Sheet']
+
+    last_row = sheet.max_row + 1
+    info = read_data_from_excel("data.xlsx")
+    for i in range(1,len(info)):
+        if info[i][-1] == data:
+            name = info[i][2]
+            return name
+
+    sheet.cell(row=last_row, column=1).value = name
 
     workbook.save('datatest.xlsx')
 
@@ -71,10 +88,6 @@ def read_data_from_excel(file_path):
         data.append(row)
     return data
 
-import cv2
-import time
-
-# Specify the desired window size (width, height)
 window_width = int(800*1.15)
 window_height = int(600*1.15)
 
@@ -92,16 +105,16 @@ def scan_multiple_qr_codes():
 
         if data:
             list_of_qr.append(data)
-            if data in list_of_data:
+            name = name_from_excel(data)
+            if data in list_of_data and name not in list_of_read:
                 print("VALID")
                 show_valid()
-                add_data_to_excel(data, "VALID")
+                add_data_to_excel(name,data, "VALID")
                 list_of_data.remove(data)
             else:
                 print("INVALID")
                 show_invalid()
 
-        # Resize the frame before displaying (optional, adjust as needed)
         frame = cv2.resize(frame, (window_width, window_height))
 
         cv2.imshow("QR Code Scanner", frame)
@@ -111,11 +124,13 @@ def scan_multiple_qr_codes():
     cap.release()
     cv2.destroyAllWindows()
 
-create_excel_file()
+infodata = read_data_from_excel("data.xlsx")
+for i in range(1,len(infodata)):
+    list_of_data.append(infodata[i][-1])
 
-info = read_data_from_excel("data.xlsx")
-for i in range(1,len(info)):
-    list_of_data.append(info[i][-1])
+inforeader = read_data_from_excel("datatest.xlsx")
+for i in range(1,len(inforeader)):
+    list_of_read.append(inforeader[i][0])
 
 if __name__ == "__main__":scan_multiple_qr_codes()
 
